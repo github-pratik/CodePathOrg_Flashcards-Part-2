@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import "./App.css";
-import { FaArrowRight } from "react-icons/fa";
+import "./style.css";
+import { FaArrowRight, FaArrowLeft, FaRandom, FaCheckCircle, FaTimesCircle, FaEye, FaPlus } from "react-icons/fa";
 
-const flashcards = [
+const flashcardsData = [
   { question: "Who is known as the father of computers?", answer: "Charles Babbage", category: "Easy" },
   { question: "What does CPU stand for?", answer: "Central Processing Unit", category: "Easy" },
   { question: "Which programming language is known as the mother of all languages?", answer: "C", category: "Medium" },
@@ -15,60 +15,178 @@ const flashcards = [
   { question: "Which data structure follows the LIFO principle?", answer: "Stack", category: "Hard" }
 ];
 
-const getCategoryColor = (category) => {
-  switch (category) {
-    case "Easy": return "rgba(144, 238, 144, 0.8)"; // Light Green
-    case "Medium": return "rgba(255, 204, 102, 0.8)"; // Light Orange
-    case "Hard": return "rgba(255, 102, 102, 0.8)"; // Light Red
-    default: return "rgba(221, 221, 221, 0.8)";
-  }
-};
-
 function App() {
+  const [flashcards, setFlashcards] = useState([...flashcardsData]);
+  const [masteredCards, setMasteredCards] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [userInput, setUserInput] = useState("");
+  const [feedback, setFeedback] = useState(null);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
 
-  const nextCard = () => {
+  const handleNext = () => {
+    if (flashcards.length === 0) return;
     setCurrentIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
     setFlipped(false);
+    setUserInput("");
+    setFeedback(null); // Reset feedback
+  };
+
+  const handleBack = () => {
+    if (flashcards.length === 0) return;
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + flashcards.length) % flashcards.length);
+    setFlipped(false);
+    setUserInput("");
+    setFeedback(null); // Reset feedback
+  };
+
+  const shuffleCards = () => {
+    const shuffled = [...flashcards].sort(() => Math.random() - 0.5);
+    setFlashcards(shuffled);
+    setCurrentIndex(0);
+    setFlipped(false);
+    setUserInput("");
+    setFeedback(null); // Reset feedback
+  };
+
+  const checkAnswer = () => {
+    const correctAnswer = flashcards[currentIndex].answer.toLowerCase();
+    const userAnswer = userInput.toLowerCase().trim();
+
+    if (userAnswer === correctAnswer) {
+      setFeedback("correct");
+      setCurrentStreak((prev) => {
+        const newStreak = prev + 1;
+        if (newStreak > longestStreak) {
+          setLongestStreak(newStreak);
+        }
+        return newStreak;
+      });
+    } else {
+      setFeedback("incorrect");
+      setCurrentStreak(0);
+    }
+  };
+
+  const markAsMastered = () => {
+    if (flashcards.length === 0) return;
+    const masteredCard = flashcards[currentIndex];
+    if (!masteredCards.some((card) => card.question === masteredCard.question)) {
+      setMasteredCards([...masteredCards, masteredCard]);
+    }
+  };
+
+  const showMasteredQuestions = () => {
+    if (masteredCards.length === 0) {
+      alert("No mastered questions yet!");
+      return;
+    }
+
+    const popup = window.open("", "_blank", "width=500,height=500,scrollbars=yes");
+
+    if (popup) {
+      popup.document.write(`
+        <html>
+        <head>
+          <title>Mastered Questions</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              text-align: center;
+              padding: 20px;
+            }
+            h2 {
+              color: #333;
+            }
+            ul {
+              list-style-type: none;
+              padding: 0;
+            }
+            li {
+              font-size: 1.1rem;
+              padding: 10px;
+              border-bottom: 1px solid #ddd;
+            }
+            button {
+              background: black;
+              color: white;
+              border: none;
+              padding: 10px 15px;
+              font-size: 1rem;
+              cursor: pointer;
+              margin-top: 15px;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>Mastered Questions</h2>
+          <ul>
+            ${masteredCards.map((card) => `<li>${card.question}</li>`).join("")}
+          </ul>
+          <button onclick="window.close()">Close</button>
+        </body>
+        </html>
+      `);
+      popup.document.close();
+    }
   };
 
   return (
     <div className="app">
-      <h1>The Ultimate Computer Test!</h1>
-      <p className="subtitle">How good of a computer nerd are you? Test all of your computer knowledge here!</p>
+      <h1>The Ultimate Computer Science Quiz!</h1>
+      <p className="subtitle">Test your CS knowledge with these fun trivia questions!</p>
       <p className="card-count">Number of cards: {flashcards.length}</p>
 
-      {/* Color Legend */}
-      <div className="color-legend">
-          <div className="legend-item">
-              <span className="color-box easy"></span> Easy
-          </div>
-          <div className="legend-item">
-              <span className="color-box medium"></span> Medium
-          </div>
-          <div className="legend-item">
-              <span className="color-box hard"></span> Hard
-          </div>
-      </div>
-      <div
-        className={`flashcard-container ${flipped ? "flipped" : ""}`}
-        onClick={() => setFlipped(!flipped)}
-        
-      >
-        <div className="flashcard" >
-          <div className="flashcard-front" style={{ backgroundColor: getCategoryColor(flashcards[currentIndex].category) }}>
-            <p>{flashcards[currentIndex].question}</p>
-          </div>
-          <div className="flashcard-back">
-            <p>{flashcards[currentIndex].answer}</p>
+      {/* Streak Counter */}
+      <p className="streak">🔥 Current Streak: {currentStreak} | Best Streak: {longestStreak}</p>
+
+      {/* Flashcard - Click to Flip */}
+      {flashcards.length > 0 && (
+        <div className="flashcard-container" onClick={() => setFlipped(!flipped)}>
+          <div className={`flashcard ${flipped ? "flipped" : ""}`}>
+            <div className="flashcard-front">
+              <p>{flashcards[currentIndex]?.question}</p>
+            </div>
+            <div className="flashcard-back">
+              <p>{flashcards[currentIndex]?.answer}</p>
+            </div>
           </div>
         </div>
+      )}
+
+      {/* User Input & Submit Button */}
+      <div className="answer-container">
+        <input
+          type="text"
+          className={`answer-input ${feedback}`}
+          placeholder="Enter your answer..."
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+        />
+        <button className="submit-button" onClick={checkAnswer}>Submit</button>
       </div>
 
-      <button className="next-button" onClick={nextCard}>
-        <FaArrowRight />
-      </button>
+      {/* Feedback Message */}
+      {feedback && (
+        <p className={`feedback-message ${feedback}`}>
+          {feedback === "correct" ? <FaCheckCircle color="green" /> : <FaTimesCircle color="red" />}
+          {feedback === "correct" ? " Correct!" : " Incorrect, try again!"}
+        </p>
+      )}
+
+      {/* Navigation, Shuffle & Mastered Buttons */}
+      <div className="button-container">
+        <button className="nav-button" onClick={handleBack}><FaArrowLeft /></button>
+        <button className="nav-button shuffle-button" onClick={shuffleCards}><FaRandom /></button>
+        <button className="nav-button" onClick={handleNext}><FaArrowRight /></button>
+      </div>
+
+      {/* Mastered Buttons */}
+      <div className="mastered-button-container">
+        <button className="submit-button" onClick={markAsMastered}><FaPlus /> Add to Mastered</button>
+        <button className="submit-button" onClick={showMasteredQuestions}><FaEye /> Show Mastered</button>
+      </div>
     </div>
   );
 }
