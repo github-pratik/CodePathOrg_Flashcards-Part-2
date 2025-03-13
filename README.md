@@ -4,7 +4,7 @@ Submitted by: **Pratik Patil**
 
 This web app: **A flashcard quiz application that helps users test their computer science knowledge through a series of trivia questions. Users can enter their answers, receive feedback, and track their progress.**
 
-Time spent: **X** hours spent in total
+Time spent: **8** hours spent in total
 
 ## Required Features
 
@@ -24,13 +24,14 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
-* [ ] List anything else that you added to improve the site's functionality!
+* [x] POP UP Window to show mastered quesiton
+* [x] Diffculty level indicator
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://imgur.com/a/LfocYgJ.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 <!-- Replace this with whatever GIF tool you used! -->
 GIF created with ...  
