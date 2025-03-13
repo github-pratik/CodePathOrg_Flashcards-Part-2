@@ -31,19 +31,15 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://imgur.com/a/LfocYgJ.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
-<!-- Replace this with whatever GIF tool you used! -->
-GIF created with ...  
-<!-- Recommended tools:
-[Kap](https://getkap.co/) for macOS
-[ScreenToGif](https://www.screentogif.com/) for Windows
-[peek](https://github.com/phw/peek) for Linux. -->
+<img src="https://github.com/github-pratik/CodePathOrg_Flashcards-Part-2/blob/main/Flash_cardpart2.gif" alt="Demo of Flash Card-Part 2" width="700">
 
 ## Notes
 
-Describe any challenges encountered while building the app.
-
+1. Pop Window creation
+2. Align the window
+3. Flip the card
+4. Array creation
+   
 ## License
 
     Copyright [2025] [Pratik Patil]
